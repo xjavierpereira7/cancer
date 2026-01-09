@@ -1,8 +1,6 @@
-ast
 config_visual
 evaluacion_mcda
 folium
-geopandas
 grafico_barras
 grafico_dispersion
 io
@@ -27,3 +25,4 @@ streamlit_folium
 todim
 utilidad
 yaml
+
