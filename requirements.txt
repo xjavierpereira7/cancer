@@ -1,4 +1,4 @@
-valuacion_mcda
+evaluacion_mcda
 folium
 grafico_barras
 grafico_dispersion
