@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_53e3f4f3a12ec7a6a034e4ec1f4def29 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+</head>
+<body>
+    
+    
+<style>
+  .resaltado {
+    color: green;
+    font-weight: bold;
+  }
+  .taxonomia-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
+  #toggleTaxonomia {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #006837;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+</style>
+    
+<button onclick="toggleTaxonomia()" style="position: fixed; top: 30px; right: 20px; z-index:9999;
+    background-color: #007bff; color: white; border: none; padding: 8px 14px; cursor: pointer;
+    font-size: 13px; border-radius: 5px; box-shadow: 1px 1px 4px rgba(0,0,0,0.2);">
+    Mostrar/Ocultar Taxonomía
+</button>
+
+<div id="taxonomiaPanel" style="position: fixed; top: 70px; right: 20px; width: 400px; max-height: 500px;
+    overflow-y: auto; background-color: white; border: 2px solid #888; padding: 12px; z-index: 9999;
+    font-size: 13px; display: none; box-shadow: 2px 2px 8px rgba(0,0,0,0.3); border-radius: 6px;">
+  <h2>Taxonomía de Evaluación de Glaciares</h2>
+  <ul>
+    <li><b>A:</b> Características del Glaciar Padre
+      <ul>
+        <li><b>A.1:</b> Geometría del Glaciar
+          <ul>
+            <li><b>A.1.a:</b> Tamaño
+              <ul>
+                <li><b>Área del Glaciar Padre</b>: Un área mayor puede implicar un mayor volumen de hielo</li>
+                <li><b>Volumen</b>: Inferido de 'Área' y 'Espesor'</li>
+                <li><b>Longitud del Glaciar</b>: Considerado en la selección de lagos potencialmente peligrosos</li>
+                <li><b>Ancho</b>: Considerado en la selección de lagos potencialmente peligrosos</li>
+              </ul>
+            </li>
+            <li><b>A.1.b:</b> Morfología y Pendiente
+              <ul>
+                <li><b>Pendiente</b>: Una pendiente pronunciada puede aumentar la probabilidad de avalanchas de hielo</li>
+                <li><b>Presencia de Grietas (Crevasses)</b>: Pueden indicar inestabilidad y ser puntos de desprendimiento de avalanchas</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><b>A.2:</b> Ubicación y Elevación
+          <ul>
+            <li><b>Elevación del Glaciar Madre</b>: Influye en las condiciones climáticas y la tasa de fusión del hielo</li>
+            <li><b>Orientación del Glaciar (Aspecto)</b>: Puede influir en la radiación solar recibida y la tasa de fusión</li>
+          </ul>
+        </li>
+        <li><b>A.3:</b> Subsuelo Glaciar
+          <ul>
+            <li><b>Topografía Subglacial (Bed Topography)</b>: La presencia de sobre-profundizaciones crea sitios favorables para la formación de lagos</li>
+            <li><b>Espesor del Hielo</b>: Crucial para estimar la topografía subglacial y la posibilidad de formación de depresiones</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><b>B:</b> Dinámica y Comportamiento Glaciar
+      <ul>
+        <li><b>B.1:</b> Estado y Cambios del Glaciar
+          <ul>
+            <li><b>Retroceso Glaciar</b>: Lleva a la formación y expansión de lagos proglaciales</li>
+            <li><b>Avance Glaciar (Surge)</b>: Puede bloquear el drenaje y formar lagos represados por hielo</li>
+            <li><b>Tasa de Expansión/Retroceso</b>: Indica la rapidez de los cambios y el potencial de formación o crecimiento de lagos</li>
+          </ul>
+        </li>
+        <li><b>B.2:</b> Procesos Activos
+          <ul>
+            <li><b>Actividad de Avalanchas de Hielo</b>: Pueden alcanzar lagos y desencadenar GLOFs</li>
+            <li><b>Velocidad de Flujo del Glaciar</b>: Velocidades extremas pueden indicar inestabilidad</li>
+            <li><b>Fusión del Hielo (Snow/Ice Melt Water)</b>: El aumento puede incrementar el nivel de los lagos y la presión sobre las represas</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><b>C:</b> Interacción Glaciar - Lago Glaciar
+      <ul>
+        <li><b>C.1:</b> Proximidad
+          <ul>
+            <li><b>Proximidad al Lago</b>: Menor distancia aumenta la probabilidad de impacto</li>
+            <li><b>Contacto Glaciar-Lago</b>: El contacto directo aumenta la susceptibilidad a GLOFs</li>
+          </ul>
+        </li>
+        <li><b>C.2:</b> Conexión
+          <ul>
+            <li><b>Conexión Hidrológica</b>: La existencia de conexión directa influye en la dinámica del lago</li>
+            <li><b>Tipo de Lago Glaciar</b>: Proglacial (conectado), desconectado, supraglaciar</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><b>D:</b> Susceptibilidad a Desprendimientos de Masa
+      <ul>
+        <li><b>D.1:</b> Terreno Adyacente
+          <ul>
+            <li><b>Pendiente del Terreno Circundante al Glaciar/Lago</b>: Pendientes pronunciadas son fuentes potenciales de avalanchas de roca</li>
+            <li><b>Geología del Terreno Circundante</b>: Influye en la estabilidad de las laderas</li>
+            <li><b>Presencia de Inestabilidades Previas</b>: Cicatrices de deslizamientos antiguos</li>
+          </ul>
+        </li>
+        <li><b>D.2:</b> Desde el Glaciar
+          <ul>
+            <li><b>Presencia de Grietas (Crevasses)</b>: Enfatizando su rol en desprendimientos</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><b>E:</b> Características del Lago Glaciar
+      <ul>
+        <li><b>E.1:</b> Represa del Lago
+          <ul>
+            <li><b>Tipo de Represa del Lago</b>: Morrena, hielo, roca (morrena e hielo tienen mayor riesgo)</li>
+            <li><b>Geometría de la Represa</b>: Ancho de la cresta, pendiente, longitud</li>
+            <li><b>Material de la Represa</b>: Cohesión, permeabilidad (para represas de morrena)</li>
+          </ul>
+        </li>
+        <li><b>E.2:</b> Geometría del Lago
+          <ul>
+            <li><b>Área del Lago Glaciar</b>: Mayor área implica mayor volumen potencial de desbordamiento</li>
+            <li><b>Volumen del Lago Glaciar</b>: Directamente relacionado con la magnitud potencial de la inundación</li>
+            <li><b>Profundidad del Lago</b>: Influye en la estabilidad y la respuesta a impactos</li>
+            <li><b>Nivel de Borde Libre (Freeboard)</b>: Menor borde libre aumenta el riesgo de desbordamiento</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><b>F:</b> Factores Ambientales y de Contexto
+      <ul>
+        <li><b>F.1:</b> Clima
+          <ul>
+            <li><b>Temperatura</b>: Aumento acelera la fusión y la inestabilidad</li>
+            <li><b>Precipitación (Nieve y Lluvia)</b>: Lluvias intensas pueden contribuir a la fusión y desencadenar flujos de escombros</li>
+            <li><b>Eventos Climáticos Extremos</b>: Olas de calor, tormentas intensas</li>
+          </ul>
+        </li>
+        <li><b>F.2:</b> Geodinámica
+          <ul>
+            <li><b>Actividad Sísmica</b>: Terremotos pueden desencadenar inestabilidad</li>
+            <li><b>Actividad Tectónica Regional</b>: Fallas activas cercanas</li>
+          </ul>
+        </li>
+        <li><b>F.3:</b> Cambios en el Tiempo
+          <ul>
+            <li><b>Tasa de Crecimiento del Lago</b>: Rápida expansión indica mayor peligrosidad</li>
+            <li><b>Cambios en la Masa del Glaciar Padre</b>: Pérdida de masa puede aumentar la probabilidad de formación de lagos</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><b>G:</b> Susceptibilidad del Terreno Aguas Abajo
+      <ul>
+        <li><b>G.1:</b> Impacto Potencial
+          <ul>
+            <li><b>Pendiente del Valle Aguas Abajo</b>: Influye en la velocidad y alcance potencial de una inundación</li>
+            <li><b>Presencia de Constricciones o Embalsamientos Naturales</b>: Pueden modificar el flujo de la inundación</li>
+            <li><b>Tipo de Suelo y Cobertura Vegetal</b>: Impacta la absorción y propagación del agua</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+<script>
+function toggleTaxonomia() {
+    var panel = document.getElementById('taxonomiaPanel');
+    if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+    } else {
+        panel.style.display = 'none';
+    }
+}
+</script>
+    
+            <div class="folium-map" id="map_53e3f4f3a12ec7a6a034e4ec1f4def29" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_53e3f4f3a12ec7a6a034e4ec1f4def29 = L.map(
+                "map_53e3f4f3a12ec7a6a034e4ec1f4def29",
+                {
+                    center: [-33.6, -70.2],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 10,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_cfb79a37d621355e8245a23b74906364 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_cfb79a37d621355e8245a23b74906364.addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+            var circle_5c8ccb00201965fd6bcf314253f86fd7 = L.circle(
+                [-33.475, -70.216],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_546b0789a36cecb6f27248a73b6bcfc5 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c8c500a8a68ce2cb9d8537325205dd66 = $(`<div id="html_c8c500a8a68ce2cb9d8537325205dd66" style="width: 100.0%; height: 100.0%;"><b>Glaciar San Jos?</b><br>Riesgo (φ): -0.199<br>Φ⁺: 0.092<br>Φ⁻: 0.291</div>`)[0];
+                popup_546b0789a36cecb6f27248a73b6bcfc5.setContent(html_c8c500a8a68ce2cb9d8537325205dd66);
+            
+        
+
+        circle_5c8ccb00201965fd6bcf314253f86fd7.bindPopup(popup_546b0789a36cecb6f27248a73b6bcfc5)
+        ;
+
+        
+    
+    
+            var circle_2f0134e76d05c7ecab7dd6d0130fa0c9 = L.circle(
+                [-33.553, -70.129],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_2bdbc7e398b2896f3f68c79db03e9e88 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_037e970ddfa49ef969d2d4839ee7cac5 = $(`<div id="html_037e970ddfa49ef969d2d4839ee7cac5" style="width: 100.0%; height: 100.0%;"><b>Glaciar El Morado</b><br>Riesgo (φ): 0.256<br>Φ⁺: 0.319<br>Φ⁻: 0.064</div>`)[0];
+                popup_2bdbc7e398b2896f3f68c79db03e9e88.setContent(html_037e970ddfa49ef969d2d4839ee7cac5);
+            
+        
+
+        circle_2f0134e76d05c7ecab7dd6d0130fa0c9.bindPopup(popup_2bdbc7e398b2896f3f68c79db03e9e88)
+        ;
+
+        
+    
+    
+            var circle_d094b4bbd209ad27c0d7e68401d4fdc6 = L.circle(
+                [-33.67, -70.237],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_302b6735ede84a18bb7c01f34417f9fb = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d329a4d7d1f370a12cc1100b7691e1f7 = $(`<div id="html_d329a4d7d1f370a12cc1100b7691e1f7" style="width: 100.0%; height: 100.0%;"><b>Glaciar San Francisco</b><br>Riesgo (φ): 0.066<br>Φ⁺: 0.318<br>Φ⁻: 0.252</div>`)[0];
+                popup_302b6735ede84a18bb7c01f34417f9fb.setContent(html_d329a4d7d1f370a12cc1100b7691e1f7);
+            
+        
+
+        circle_d094b4bbd209ad27c0d7e68401d4fdc6.bindPopup(popup_302b6735ede84a18bb7c01f34417f9fb)
+        ;
+
+        
+    
+    
+            var circle_b98191ec6ef7967d23e4929b89c83512 = L.circle(
+                [-33.606, -70.148],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_5dfef4a125e08b90bac690c759d61d26 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5e1b6476217be74878dcf26af6bf2e55 = $(`<div id="html_5e1b6476217be74878dcf26af6bf2e55" style="width: 100.0%; height: 100.0%;"><b>Glaciar Las ?nimas</b><br>Riesgo (φ): -0.074<br>Φ⁺: 0.174<br>Φ⁻: 0.248</div>`)[0];
+                popup_5dfef4a125e08b90bac690c759d61d26.setContent(html_5e1b6476217be74878dcf26af6bf2e55);
+            
+        
+
+        circle_b98191ec6ef7967d23e4929b89c83512.bindPopup(popup_5dfef4a125e08b90bac690c759d61d26)
+        ;
+
+        
+    
+    
+            var circle_a09a1184a3ee16f3586237b8b3b69859 = L.circle(
+                [-33.562, -70.276],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_0ebdd78bce370d33fb9ac83776867504 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_5773ab8be08867244c0e924c9c5af96b = $(`<div id="html_5773ab8be08867244c0e924c9c5af96b" style="width: 100.0%; height: 100.0%;"><b>Glaciar El Colorado</b><br>Riesgo (φ): -0.201<br>Φ⁺: 0.076<br>Φ⁻: 0.276</div>`)[0];
+                popup_0ebdd78bce370d33fb9ac83776867504.setContent(html_5773ab8be08867244c0e924c9c5af96b);
+            
+        
+
+        circle_a09a1184a3ee16f3586237b8b3b69859.bindPopup(popup_0ebdd78bce370d33fb9ac83776867504)
+        ;
+
+        
+    
+    
+            var circle_4875651c3418e6a1b2f0411ffd64de85 = L.circle(
+                [-33.593, -70.217],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_e1c7766c4ced44c27debf3bce6e8aa3e = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0e6f8debaee22d5b9a9389833b183477 = $(`<div id="html_0e6f8debaee22d5b9a9389833b183477" style="width: 100.0%; height: 100.0%;"><b>Glaciar La Paloma</b><br>Riesgo (φ): 0.095<br>Φ⁺: 0.244<br>Φ⁻: 0.149</div>`)[0];
+                popup_e1c7766c4ced44c27debf3bce6e8aa3e.setContent(html_0e6f8debaee22d5b9a9389833b183477);
+            
+        
+
+        circle_4875651c3418e6a1b2f0411ffd64de85.bindPopup(popup_e1c7766c4ced44c27debf3bce6e8aa3e)
+        ;
+
+        
+    
+    
+            var circle_732413d996c31289c640d2440b9a2071 = L.circle(
+                [-33.54, -70.161],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_17aaf8f383c3693fbd9dad74c0b74c4a = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_f35a20f51a7cbf05215d942b3324ecf1 = $(`<div id="html_f35a20f51a7cbf05215d942b3324ecf1" style="width: 100.0%; height: 100.0%;"><b>Glaciar Morado Bajo</b><br>Riesgo (φ): -0.133<br>Φ⁺: 0.129<br>Φ⁻: 0.262</div>`)[0];
+                popup_17aaf8f383c3693fbd9dad74c0b74c4a.setContent(html_f35a20f51a7cbf05215d942b3324ecf1);
+            
+        
+
+        circle_732413d996c31289c640d2440b9a2071.bindPopup(popup_17aaf8f383c3693fbd9dad74c0b74c4a)
+        ;
+
+        
+    
+    
+            var circle_24012342ee4dcf9b4c5c5ee31a9cf4a2 = L.circle(
+                [-33.635, -70.202],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "green", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_63520f9cf0a415d985d39008dd9bac44 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c3e540ac780ad39809957bcb8a23948a = $(`<div id="html_c3e540ac780ad39809957bcb8a23948a" style="width: 100.0%; height: 100.0%;"><b>Glaciar R?o Volc?n</b><br>Riesgo (φ): 0.383<br>Φ⁺: 0.449<br>Φ⁻: 0.065</div>`)[0];
+                popup_63520f9cf0a415d985d39008dd9bac44.setContent(html_c3e540ac780ad39809957bcb8a23948a);
+            
+        
+
+        circle_24012342ee4dcf9b4c5c5ee31a9cf4a2.bindPopup(popup_63520f9cf0a415d985d39008dd9bac44)
+        ;
+
+        
+    
+    
+            var circle_208ef522719fb073e9aacda5572e7547 = L.circle(
+                [-33.554, -70.31],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.9, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 1500, "stroke": true, "weight": 3}
+            ).addTo(map_53e3f4f3a12ec7a6a034e4ec1f4def29);
+        
+    
+        var popup_c526b2357d9b4c58450af34e3a271127 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_0cc17ff88c5ed19e8baf532fc454410b = $(`<div id="html_0cc17ff88c5ed19e8baf532fc454410b" style="width: 100.0%; height: 100.0%;"><b>Glaciar Azul</b><br>Riesgo (φ): -0.193<br>Φ⁺: 0.110<br>Φ⁻: 0.303</div>`)[0];
+                popup_c526b2357d9b4c58450af34e3a271127.setContent(html_0cc17ff88c5ed19e8baf532fc454410b);
+            
+        
+
+        circle_208ef522719fb073e9aacda5572e7547.bindPopup(popup_c526b2357d9b4c58450af34e3a271127)
+        ;
+
+        
+    
+</script>
+</html>
