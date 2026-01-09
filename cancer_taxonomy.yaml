@@ -1,0 +1,105 @@
+taxonomia_cancer_pulmon:
+  nombre: "Evaluación de Riesgo de Cáncer de Pulmón"
+  descripcion: "Sistema de clasificación MCDA para priorización territorial basado en múltiples criterios de salud pública"
+  version: "1.0"
+  fecha_actualizacion: "2024-01-20"
+
+  dimensiones:
+    carga_enfermedad:
+      nombre: "Carga de Enfermedad"
+      descripcion: "Indicadores epidemiológicos de presencia e impacto del cáncer de pulmón"
+      peso_sugerido: 0.38
+      criterios:
+        tasa_incidencia:
+          nombre: "Tasa de Incidencia"
+          descripcion: "Número de nuevos casos por 100,000 habitantes en el último año"
+          tipo: "maximizar"
+          unidad: "casos/100,000"
+          peso_recomendado: 0.25
+        
+        mortalidad_temprana:
+          nombre: "Mortalidad Temprana"
+          descripcion: "Porcentaje de muertes por cáncer de pulmón en menores de 65 años"
+          tipo: "maximizar"
+          unidad: "%"
+          peso_recomendado: 0.13
+
+    factores_riesgo:
+      nombre: "Factores de Riesgo"
+      descripcion: "Determinantes ambientales y conductuales asociados al desarrollo de cáncer de pulmón"
+      peso_sugerido: 0.30
+      criterios:
+        prevalencia_tabaquismo:
+          nombre: "Prevalencia de Tabaquismo"
+          descripcion: "Porcentaje de población adulta que fuma regularmente"
+          tipo: "maximizar"
+          unidad: "%"
+          peso_recomendado: 0.15
+        
+        contaminacion_aire:
+          nombre: "Contaminación del Aire"
+          descripcion: "Concentración promedio anual de material particulado PM2.5"
+          tipo: "maximizar"
+          unidad: "µg/m³"
+          peso_recomendado: 0.10
+        
+        exposicion_ocupacional:
+          nombre: "Exposición Ocupacional"
+          descripcion: "Porcentaje de trabajadores expuestos a carcinógenos pulmonares"
+          tipo: "maximizar"
+          unidad: "%"
+          peso_recomendado: 0.05
+
+    capacidad_respuesta:
+      nombre: "Capacidad de Respuesta Sanitaria"
+      descripcion: "Recursos y acceso a servicios de diagnóstico y tratamiento"
+      peso_sugerido: 0.27
+      criterios:
+        acceso_tac:
+          nombre: "Acceso a TAC"
+          descripcion: "Porcentaje de población con acceso a tomografía computarizada en menos de 30 días"
+          tipo: "minimizar"
+          unidad: "%"
+          peso_recomendado: 0.15
+        
+        espera_diagnostico:
+          nombre: "Tiempo de Espera para Diagnóstico"
+          descripcion: "Días promedio entre sospecha clínica y diagnóstico confirmado"
+          tipo: "maximizar"
+          unidad: "días"
+          peso_recomendado: 0.12
+
+    vulnerabilidad_social:
+      nombre: "Vulnerabilidad Social"
+      descripcion: "Factores socioeconómicos que afectan el acceso y desenlace"
+      peso_sugerido: 0.05
+      criterios:
+        cobertura_salud:
+          nombre: "Cobertura de Salud"
+          descripcion: "Porcentaje de población con cobertura de salud pública o privada"
+          tipo: "minimizar"
+          unidad: "%"
+          peso_recomendado: 0.05
+
+  escalas:
+    riesgo_alto:
+      rango: [0.7, 1.0]
+      descripcion: "Prioridad máxima - Intervención urgente requerida"
+      color: "#e74c3c"
+    
+    riesgo_medio:
+      rango: [0.4, 0.7]
+      descripcion: "Prioridad media - Monitoreo y planificación"
+      color: "#f39c12"
+    
+    riesgo_bajo:
+      rango: [0.0, 0.4]
+      descripcion: "Prioridad baja - Mantener vigilancia"
+      color: "#27ae60"
+
+  recomendaciones:
+    uso_metodos:
+      promethee: "Recomendado cuando los criterios tienen relaciones de preferencia complejas"
+      todim: "Ideal para priorizar las peores situaciones (aversión a la pérdida)"
+      mavt: "Útil cuando se requieren compensaciones entre criterios"
+      red_neuronal: "Para aprendizaje de patrones complejos con datos históricos"
